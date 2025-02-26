@@ -1,0 +1,46 @@
+/* Общие стили */
+body {
+  background: #ECEFF1;
+  color: rgba(0, 0, 0, 0.87);
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar */
+.navbar {
+  margin-bottom: 0;
+}
+
+/* Sidebar (только для админ-панели) */
+.sidebar {
+  height: 100vh;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 220px;
+  background-color: #f8f9fa;
+  padding-top: 20px;
+  border-right: 1px solid #dee2e6;
+}
+
+/* Основной контент */
+.content {
+  margin-left: 240px;
+  padding: 20px;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Стили для формы авторизации */
+.login-card {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 32px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
