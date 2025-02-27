@@ -5,26 +5,26 @@ document.addEventListener('DOMContentLoaded', function() {
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // Если пользователь авторизован, показываем админ-панель
-      if(document.getElementById('login-container')) {
+      if (document.getElementById('login-container')) {
         document.getElementById('login-container').style.display = 'none';
       }
-      if(document.getElementById('admin-container')) {
+      if (document.getElementById('admin-container')) {
         document.getElementById('admin-container').style.display = 'block';
       }
     } else {
       // Если пользователь не авторизован, показываем форму логина
-      if(document.getElementById('login-container')) {
+      if (document.getElementById('login-container')) {
         document.getElementById('login-container').style.display = 'block';
       }
-      if(document.getElementById('admin-container')) {
+      if (document.getElementById('admin-container')) {
         document.getElementById('admin-container').style.display = 'none';
       }
     }
   });
-  
-  // Логин
+
+  // Обработка формы логина
   var loginForm = document.getElementById('login-form');
-  if(loginForm) {
+  if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
       e.preventDefault();
       var email = document.getElementById('login-email').value;
@@ -38,196 +38,164 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
   }
-  
-  // Выход
+
+  // Обработка кнопки выхода
   var logoutBtn = document.getElementById('logoutBtn');
-  if(logoutBtn) {
+  if (logoutBtn) {
     logoutBtn.addEventListener('click', function() {
       firebase.auth().signOut().then(() => {
-        console.log('Пользователь вышел');
+        console.log('Пользователь вышел из системы');
       }).catch((error) => {
         console.error('Ошибка выхода:', error);
       });
     });
   }
-  
-  // Если мы на странице профилей питомцев (index.html)
-  if(document.getElementById('pets-table-body')) {
+
+  // Если мы на странице списка питомцев (index.html)
+  if (document.getElementById('pets-table-body')) {
     loadPetProfiles();
   }
-  
-  // Если мы на странице дневника здоровья
-  if(document.getElementById('diary-form')) {
-    loadDiaryEntries();
-    document.getElementById('diary-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      saveDiaryEntry();
+
+  // Если мы на странице карточки питомца (pet.html)
+  if (document.getElementById('pet-details')) {
+    loadPetDetails();
+  }
+
+  // Обработка показа/скрытия формы редактирования на pet.html
+  var editPetBtn = document.getElementById('editPetBtn');
+  if (editPetBtn) {
+    editPetBtn.addEventListener('click', function() {
+      var formContainer = document.getElementById('editPetFormContainer');
+      formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
     });
   }
-  
-  // Если мы на странице диет
-  if(document.getElementById('diet-form')) {
-    loadDiets();
-    document.getElementById('diet-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      saveDiet();
-    });
-  }
-  
-  // Если мы на странице заболеваний
-  if(document.getElementById('disease-form')) {
-    loadDiseases();
-    document.getElementById('disease-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      saveDisease();
+  var cancelEditBtn = document.getElementById('cancelEditBtn');
+  if (cancelEditBtn) {
+    cancelEditBtn.addEventListener('click', function() {
+      document.getElementById('editPetFormContainer').style.display = 'none';
     });
   }
 });
 
 
-// Функция для загрузки профилей питомцев
+// Загрузка списка питомцев с фильтром
 function loadPetProfiles() {
   const tableBody = document.getElementById('pets-table-body');
   tableBody.innerHTML = '';
+  let allPets = [];
   firebase.firestore().collection('pets').get()
     .then(querySnapshot => {
       querySnapshot.forEach(doc => {
         const pet = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><img src="${pet.photoUrl || 'https://via.placeholder.com/50'}" alt="Фото" class="img-thumbnail" width="50"></td>
-          <td>${pet.name || ''}</td>
-          <td>${pet.breed || ''}</td>
-          <td>${pet.age || ''}</td>
-          <td>${pet.status || ''}</td>
-        `;
-        tableBody.appendChild(tr);
+        pet.id = doc.id;
+        allPets.push(pet);
+      });
+      renderPetTable(allPets);
+      // Фильтр
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', function() {
+        const query = searchInput.value.toLowerCase();
+        const filteredPets = allPets.filter(pet => {
+          return (pet.name && pet.name.toLowerCase().includes(query)) ||
+                 (pet.owner && pet.owner.toLowerCase().includes(query)) ||
+                 (pet.breed && pet.breed.toLowerCase().includes(query)) ||
+                 (pet.age && pet.age.toString().includes(query));
+        });
+        renderPetTable(filteredPets);
       });
     })
     .catch(error => console.error("Ошибка загрузки питомцев:", error));
 }
 
-// Функция для загрузки записей дневника здоровья
-function loadDiaryEntries() {
-  const tableBody = document.getElementById('diary-table-body');
+function renderPetTable(pets) {
+  const tableBody = document.getElementById('pets-table-body');
   tableBody.innerHTML = '';
-  firebase.firestore().collection('healthDiary').orderBy('timestamp', 'desc').get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        const entry = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${new Date(entry.timestamp.seconds * 1000).toLocaleString()}</td>
-          <td>${entry.weight || ''}</td>
-          <td>${entry.feeding || ''}</td>
-          <td>${entry.symptoms || ''} / ${entry.disease || ''}</td>
-          <td>${entry.photoUrl ? `<img src="${entry.photoUrl}" width="50" class="img-thumbnail">` : ''}</td>
-          <td>${entry.notes || ''}</td>
-        `;
-        tableBody.appendChild(tr);
-      });
-    })
-    .catch(error => console.error("Ошибка загрузки дневника:", error));
-}
-
-// Функция для сохранения записи дневника
-function saveDiaryEntry() {
-  const entry = {
-    weight: document.getElementById('diary-weight').value,
-    feeding: document.getElementById('diary-feeding').value,
-    symptoms: document.getElementById('diary-symptoms').value,
-    disease: document.getElementById('diary-disease').value,
-    photoUrl: document.getElementById('diary-photo').value,
-    notes: document.getElementById('diary-notes').value,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  firebase.firestore().collection('healthDiary').add(entry)
-    .then(() => {
-      document.getElementById('diary-message').textContent = 'Запись сохранена';
-      loadDiaryEntries();
-      document.getElementById('diary-form').reset();
-    })
-    .catch(error => {
-      document.getElementById('diary-message').textContent = 'Ошибка сохранения: ' + error.message;
+  pets.forEach(pet => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${pet.photoUrl || 'https://via.placeholder.com/50'}" alt="Фото" class="img-thumbnail" width="50"></td>
+      <td>${pet.name || ''}</td>
+      <td>${pet.breed || ''}</td>
+      <td>${pet.age || ''}</td>
+      <td>${pet.owner || ''}</td>
+    `;
+    // При клике переходим на карточку питомца
+    tr.addEventListener('click', function() {
+      window.location.href = `pet.html?id=${pet.id}`;
     });
+    tableBody.appendChild(tr);
+  });
 }
 
-// Функция для загрузки назначенных диет
-function loadDiets() {
-  const tableBody = document.getElementById('diet-table-body');
-  tableBody.innerHTML = '';
-  firebase.firestore().collection('diets').orderBy('assignedAt', 'desc').get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        const diet = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${diet.petId || ''}</td>
-          <td>${diet.dietName || ''}</td>
-          <td>${diet.description || ''}</td>
-          <td>${new Date(diet.assignedAt.seconds * 1000).toLocaleString()}</td>
-        `;
-        tableBody.appendChild(tr);
-      });
+// Загрузка данных питомца для страницы pet.html
+function loadPetDetails() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const petId = urlParams.get('id');
+  if (!petId) return;
+  firebase.firestore().collection('pets').doc(petId).get()
+    .then(doc => {
+      if (doc.exists) {
+        const pet = doc.data();
+        pet.id = doc.id;
+        displayPetDetails(pet);
+      } else {
+        document.getElementById('pet-details').textContent = 'Питомец не найден';
+      }
     })
-    .catch(error => console.error("Ошибка загрузки диет:", error));
+    .catch(error => console.error("Ошибка загрузки питомца:", error));
 }
 
-// Функция для сохранения диеты
-function saveDiet() {
-  const diet = {
-    petId: document.getElementById('diet-petId').value,
-    dietName: document.getElementById('diet-name').value,
-    description: document.getElementById('diet-description').value,
-    assignedAt: firebase.firestore.FieldValue.serverTimestamp()
+function displayPetDetails(pet) {
+  const container = document.getElementById('pet-details');
+  container.innerHTML = `
+    <div class="card mb-3">
+      <div class="row no-gutters">
+        <div class="col-md-4">
+          <img src="${pet.photoUrl || 'https://via.placeholder.com/150'}" class="card-img" alt="Фото питомца">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">${pet.name || 'Без имени'}</h5>
+            <p class="card-text">Порода: ${pet.breed || 'Не указано'}</p>
+            <p class="card-text">Возраст: ${pet.age || ''}</p>
+            <p class="card-text">Владелец: ${pet.owner || 'Не указан'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Предзаполнение формы редактирования
+  document.getElementById('edit-pet-name').value = pet.name || '';
+  document.getElementById('edit-pet-breed').value = pet.breed || '';
+  document.getElementById('edit-pet-age').value = pet.age || '';
+  document.getElementById('edit-pet-owner').value = pet.owner || '';
+  document.getElementById('edit-pet-photo').value = pet.photoUrl || '';
+  
+  // Обработка формы редактирования
+  const editForm = document.getElementById('edit-pet-form');
+  editForm.onsubmit = function(e) {
+    e.preventDefault();
+    updatePetDetails(pet.id);
   };
-  firebase.firestore().collection('diets').add(diet)
+}
+
+function updatePetDetails(petId) {
+  const updatedData = {
+    name: document.getElementById('edit-pet-name').value,
+    breed: document.getElementById('edit-pet-breed').value,
+    age: parseInt(document.getElementById('edit-pet-age').value),
+    owner: document.getElementById('edit-pet-owner').value,
+    photoUrl: document.getElementById('edit-pet-photo').value
+  };
+  firebase.firestore().collection('pets').doc(petId).update(updatedData)
     .then(() => {
-      document.getElementById('diet-message').textContent = 'Диета назначена';
-      loadDiets();
-      document.getElementById('diet-form').reset();
+      document.getElementById('edit-pet-message').textContent = 'Данные обновлены';
+      // Обновляем отображение карточки
+      displayPetDetails(updatedData);
+      document.getElementById('editPetFormContainer').style.display = 'none';
     })
     .catch(error => {
-      document.getElementById('diet-message').textContent = 'Ошибка: ' + error.message;
-    });
-}
-
-// Функция для загрузки списка заболеваний
-function loadDiseases() {
-  const tableBody = document.getElementById('disease-table-body');
-  tableBody.innerHTML = '';
-  firebase.firestore().collection('diseases').orderBy('createdAt', 'desc').get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        const disease = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${disease.name || ''}</td>
-          <td>${disease.description || ''}</td>
-          <td>${disease.treatment || ''}</td>
-          <td>${new Date(disease.createdAt.seconds * 1000).toLocaleString()}</td>
-        `;
-        tableBody.appendChild(tr);
-      });
-    })
-    .catch(error => console.error("Ошибка загрузки заболеваний:", error));
-}
-
-// Функция для сохранения заболевания
-function saveDisease() {
-  const disease = {
-    name: document.getElementById('disease-name').value,
-    description: document.getElementById('disease-description').value,
-    treatment: document.getElementById('disease-treatment').value,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  firebase.firestore().collection('diseases').add(disease)
-    .then(() => {
-      document.getElementById('disease-message').textContent = 'Заболевание добавлено';
-      loadDiseases();
-      document.getElementById('disease-form').reset();
-    })
-    .catch(error => {
-      document.getElementById('disease-message').textContent = 'Ошибка: ' + error.message;
+      document.getElementById('edit-pet-message').textContent = 'Ошибка обновления: ' + error.message;
     });
 }
