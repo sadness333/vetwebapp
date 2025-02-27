@@ -27,7 +27,8 @@ body {
 .content {
   margin-left: 240px;
   padding: 20px;
-  margin-top: 150px;  /* Отступ сверху для фиксации под шапкой */
+  padding-top: 65px;
+  margin-top: 70px;  /* Отступ сверху для фиксации под шапкой */
 }
 
 .nav-link.active {
