@@ -9,7 +9,7 @@
   <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
   <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
   <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
-  <!-- Инициализация Firebase (при необходимости измените useEmulator) -->
+  <!-- Инициализация Firebase -->
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
   
   <!-- Bootstrap CSS -->
@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Форма авторизации (показывается, если не залогинен) -->
+  <!-- Форма авторизации -->
   <div id="login-container" class="container">
     <div class="login-card">
       <h3>Вход в систему</h3>
@@ -39,33 +39,35 @@
   
   <!-- Панель администратора (после авторизации) -->
   <div id="admin-container" style="display: none;">
-    <!-- Верхняя навигационная панель -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="index.html">Vet Admin</a>
       <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
     </nav>
     
-    <!-- Сайдбар: только Главная, Добавление питомца и Добавление владельца -->
+    <!-- Сайдбар с пунктами: Главная, Добавление питомца и Добавление владельца -->
     <div class="sidebar">
       <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link active" href="index.html">Главная</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="new-pet.html">Добавление питомца</a>
+          <a class="nav-link" href="new-pet.html">Добавление нового питомца</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="new-owner.html">Добавление владельца</a>
+          <a class="nav-link" href="new-owner.html">Добавление нового владельца</a>
         </li>
       </ul>
     </div>
     
-    <!-- Основной контент: список питомцев с фильтром -->
+    <!-- Основной контент -->
     <div class="content">
       <h2>Список питомцев</h2>
-      <!-- Поле поиска -->
-      <div class="mb-3">
+      <!-- Поле поиска с кнопкой -->
+      <div class="input-group mb-3">
         <input type="text" id="searchInput" class="form-control" placeholder="Поиск по кличке, владельцу, породе и т.д.">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" id="searchButton">Поиск</button>
+        </div>
       </div>
       <table class="table table-striped">
         <thead>
@@ -78,16 +80,15 @@
           </tr>
         </thead>
         <tbody id="pets-table-body">
-          <!-- Здесь динамически будут добавляться записи питомцев -->
+          <!-- Данные питомцев загружаются динамически -->
         </tbody>
       </table>
     </div>
   </div>
   
-  <!-- jQuery и Bootstrap JS -->
+  <!-- Скрипты -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-  <!-- Внешний JS-файл -->
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,99 +1,87 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Карточка питомца</title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Карточка питомца</title>
+  
+  <!-- Firebase SDK -->
+  <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
+  <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
+  <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
+  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="index.html">Vet Admin</a>
+    <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
+  </nav>
+  
+  <div class="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Главная</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="#">Карточка питомца</a>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="content">
+    <h2>Карточка питомца</h2>
+    <!-- Форма с данными питомца. Поля disabled по умолчанию -->
+    <form id="pet-details-form">
+      <div class="form-group">
+        <label for="pet-name">Имя</label>
+        <input type="text" id="pet-name" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label for="pet-breed">Порода</label>
+        <input type="text" id="pet-breed" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label for="pet-age">Возраст</label>
+        <input type="number" id="pet-age" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label for="pet-owner">Владелец</label>
+        <input type="text" id="pet-owner" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label for="pet-photo">URL фото</label>
+        <input type="text" id="pet-photo" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label for="pet-feeding">Режим питания</label>
+        <input type="text" id="pet-feeding" class="form-control" disabled>
+      </div>
+      <div class="form-group">
+        <label for="pet-medical">Медицинская карта</label>
+        <textarea id="pet-medical" class="form-control" rows="3" disabled></textarea>
+      </div>
+    </form>
+    <!-- Кнопки управления -->
+    <button id="editButton" class="btn btn-primary">Редактировать данные</button>
+    <button id="saveButton" class="btn btn-success" style="display:none;">Сохранить изменения</button>
+    <button id="cancelButton" class="btn btn-secondary" style="display:none;">Отмена</button>
+    <div id="edit-message" class="mt-2"></div>
     
-    <!-- Firebase SDK -->
-    <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <!-- Верхняя навигационная панель -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="index.html">Vet Admin</a>
-      <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
-    </nav>
-    
-    <!-- Сайдбар (такой же, как на главной странице) -->
-    <div class="sidebar">
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">Главная</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Карточка питомца</a>
-        </li>
-      </ul>
+    <!-- Дополнительные действия врача (пока-заглушки) -->
+    <div class="mt-4">
+      <h4>Дополнительные действия</h4>
+      <button class="btn btn-outline-primary" id="addDiseaseBtn">Добавить болезнь</button>
+      <button class="btn btn-outline-primary" id="addDietBtn">Добавить диету</button>
+      <button class="btn btn-outline-primary" id="addRecordBtn">Добавить запись</button>
     </div>
-    
-    <!-- Основной контент: карточка питомца и форма редактирования -->
-    <div class="content">
-      <h2>Карточка питомца</h2>
-      <div id="pet-details">
-        <!-- Здесь будут выведены данные питомца -->
-      </div>
-      <button class="btn btn-primary mt-3" id="showEditFormBtn">Редактировать данные</button>
-      
-      <!-- Форма редактирования (скрыта по умолчанию) -->
-      <div id="editPetFormContainer" style="display: none;" class="mt-4">
-        <h4>Редактировать данные питомца</h4>
-        <form id="edit-pet-form">
-          <div class="form-group">
-            <label for="edit-pet-name">Имя</label>
-            <input type="text" id="edit-pet-name" class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="edit-pet-breed">Порода</label>
-            <input type="text" id="edit-pet-breed" class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="edit-pet-age">Возраст</label>
-            <input type="number" id="edit-pet-age" class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="edit-pet-owner">Владелец</label>
-            <input type="text" id="edit-pet-owner" class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="edit-pet-photo">URL фото</label>
-            <input type="text" id="edit-pet-photo" class="form-control">
-          </div>
-          <!-- Дополнительные поля -->
-          <div class="form-group">
-            <label for="edit-pet-feeding">Режим питания</label>
-            <input type="text" id="edit-pet-feeding" class="form-control" placeholder="Например, 2 раза в день">
-          </div>
-          <div class="form-group">
-            <label for="edit-pet-medical">Медицинская карта</label>
-            <textarea id="edit-pet-medical" class="form-control" rows="3" placeholder="История заболеваний, рекомендации"></textarea>
-          </div>
-          <button type="submit" class="btn btn-success">Сохранить изменения</button>
-          <button type="button" class="btn btn-secondary" id="cancelEditBtn">Отмена</button>
-          <div id="edit-pet-message" class="mt-2"></div>
-        </form>
-      </div>
-      
-      <!-- Дополнительные действия врача -->
-      <div class="mt-4">
-        <h4>Дополнительные действия</h4>
-        <button class="btn btn-outline-primary" id="addDiseaseBtn">Добавить болезнь</button>
-        <button class="btn btn-outline-primary" id="addDietBtn">Добавить диету</button>
-        <button class="btn btn-outline-primary" id="addRecordBtn">Добавить запись</button>
-      </div>
-    </div>
-    
-    <!-- jQuery и Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <!-- Внешний JS-файл -->
-    <script src="app.js"></script>
-  </body>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+</body>
 </html>
