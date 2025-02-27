@@ -3,22 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Админ-панель ветеринара</title>
-
+    <title>Vet Admin Panel</title>
+    
     <!-- Firebase SDK -->
     <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
     <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
-    <!-- Инициализация Firebase (параметр useEmulator можно изменить по необходимости) -->
+    <!-- Инициализация Firebase (при необходимости измените useEmulator) -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Внешний файл стилей -->
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <!-- Контейнер для формы авторизации -->
+    <!-- Форма авторизации (показывается, если не залогинен) -->
     <div id="login-container" class="container">
       <div class="login-card">
         <h3>Вход в систему</h3>
@@ -36,50 +36,53 @@
         </form>
       </div>
     </div>
-
-    <!-- Контейнер для админ-панели (скрыт до авторизации) -->
+    
+    <!-- Панель администратора (видна после входа) -->
     <div id="admin-container" style="display: none;">
       <!-- Навигационная панель -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="index.html">Vet Admin</a>
         <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
       </nav>
-
+      
       <!-- Боковая панель -->
       <div class="sidebar">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active" href="#" id="dashboardLink">Главная</a>
+            <a class="nav-link active" href="index.html">Профили питомцев</a>
           </li>
           <li class="nav-item">
-            <!-- Переход на страницу добавления/редактирования -->
-            <a class="nav-link" href="edit.html" id="editLink">Добавить/Редактировать питомца</a>
+            <a class="nav-link" href="diary.html">Дневник здоровья</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="diets.html">Диеты</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="diseases.html">Болезни</a>
           </li>
         </ul>
       </div>
-
+      
       <!-- Основной контент: список питомцев -->
       <div class="content">
-        <div id="dashboardSection">
-          <h2>Профили питомцев</h2>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Фото</th>
-                <th>Имя</th>
-                <th>Порода</th>
-                <th>Возраст</th>
-                <th>Статус</th>
-              </tr>
-            </thead>
-            <tbody id="animal-table-body">
-              <!-- Здесь динамически будут добавляться записи из базы -->
-            </tbody>
-          </table>
-        </div>
+        <h2>Профили питомцев</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Фото</th>
+              <th>Имя</th>
+              <th>Порода</th>
+              <th>Возраст</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody id="pets-table-body">
+            <!-- Здесь динамически загружаются записи питомцев -->
+          </tbody>
+        </table>
       </div>
     </div>
-
+    
     <!-- jQuery и Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>

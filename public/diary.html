@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Дневник здоровья</title>
+    
+    <!-- Firebase SDK -->
+    <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <!-- Навигация (можно повторить общий header) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="index.html">Vet Admin</a>
+      <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
+    </nav>
+    
+    <div class="sidebar">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Профили питомцев</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="diary.html">Дневник здоровья</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="diets.html">Диеты</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="diseases.html">Болезни</a>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="content">
+      <h2>Дневник здоровья</h2>
+      
+      <!-- Форма добавления/редактирования записи -->
+      <form id="diary-form" class="mb-4">
+        <div class="form-row">
+          <div class="form-group col-md-2">
+            <label for="diary-weight">Вес</label>
+            <input type="number" id="diary-weight" class="form-control" placeholder="кг">
+          </div>
+          <div class="form-group col-md-3">
+            <label for="diary-feeding">Питание</label>
+            <input type="text" id="diary-feeding" class="form-control" placeholder="Рацион">
+          </div>
+          <div class="form-group col-md-3">
+            <label for="diary-symptoms">Симптомы</label>
+            <input type="text" id="diary-symptoms" class="form-control" placeholder="Например, вялость">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="diary-disease">Диагноз</label>
+            <input type="text" id="diary-disease" class="form-control" placeholder="Болезнь">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="diary-photo">URL фото</label>
+            <input type="text" id="diary-photo" class="form-control" placeholder="Ссылка">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="diary-notes">Дополнительно</label>
+          <textarea id="diary-notes" class="form-control" rows="2" placeholder="Заметки"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Сохранить запись</button>
+        <div id="diary-message" class="mt-2"></div>
+      </form>
+      
+      <!-- Список записей -->
+      <h4>История записей</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Вес</th>
+            <th>Питание</th>
+            <th>Симптомы / Диагноз</th>
+            <th>Фото</th>
+            <th>Заметки</th>
+          </tr>
+        </thead>
+        <tbody id="diary-table-body">
+          <!-- Здесь динамически загружаются записи из базы -->
+        </tbody>
+      </table>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
