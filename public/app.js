@@ -109,6 +109,34 @@ function renderPetTable(pets) {
 }
 
 // Для страницы edit.html
+function loadPetDetails() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const petId = urlParams.get('id');
+  if (!petId) return;
+  firebase.firestore().collection('pets').doc(petId).get()
+    .then(doc => {
+      if (doc.exists) {
+        const pet = doc.data();
+        pet.id = doc.id;
+        fillPetForm(pet);
+      } else {
+        document.getElementById('pet-details-form').innerHTML = 'Питомец не найден';
+      }
+    })
+    .catch(error => console.error("Ошибка загрузки питомца:", error));
+}
+
+function fillPetForm(pet) {
+  document.getElementById('pet-name').value = pet.name || '';
+  document.getElementById('pet-breed').value = pet.breed || '';
+  document.getElementById('pet-age').value = pet.age || '';
+  document.getElementById('pet-owner').value = pet.owner || '';
+  document.getElementById('pet-photo').value = pet.photoUrl || '';
+  document.getElementById('pet-feeding').value = pet.feedingRegime || '';
+  document.getElementById('pet-medical').value = pet.medicalRecord || '';
+}
+
+// Если мы находимся на edit.html, добавляем обработчики для редактирования
 if (window.location.pathname.includes('edit.html')) {
   loadPetDetails();
 
