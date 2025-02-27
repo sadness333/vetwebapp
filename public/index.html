@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <!-- Форма авторизации (показывается, если пользователь не залогинен) -->
+    <!-- Форма авторизации (если пользователь не залогинен) -->
     <div id="login-container" class="container">
       <div class="login-card">
         <h3>Вход в систему</h3>
@@ -37,7 +37,7 @@
       </div>
     </div>
     
-    <!-- Панель администратора (видна после авторизации) -->
+    <!-- Панель администратора (после авторизации) -->
     <div id="admin-container" style="display: none;">
       <!-- Верхняя навигационная панель -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -45,21 +45,17 @@
         <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
       </nav>
       
-      <!-- Боковая панель -->
+      <!-- Сайдбар: только Главная, Добавление питомца и Добавление владельца -->
       <div class="sidebar">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active" href="index.html">Список питомцев</a>
-          </li>
-          <!-- Дополнительные разделы можно добавить по необходимости -->
-          <li class="nav-item">
-            <a class="nav-link" href="diary.html">Дневник здоровья</a>
+            <a class="nav-link active" href="index.html">Главная</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="diets.html">Диеты</a>
+            <a class="nav-link" href="new-pet.html">Добавление нового питомца</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="diseases.html">Болезни</a>
+            <a class="nav-link" href="new-owner.html">Добавление нового владельца</a>
           </li>
         </ul>
       </div>
@@ -67,7 +63,7 @@
       <!-- Основной контент: список питомцев с фильтром -->
       <div class="content">
         <h2>Список питомцев</h2>
-        <!-- Поле фильтрации -->
+        <!-- Поле поиска -->
         <div class="mb-3">
           <input type="text" id="searchInput" class="form-control" placeholder="Поиск по кличке, владельцу, породе и т.д.">
         </div>
@@ -82,7 +78,7 @@
             </tr>
           </thead>
           <tbody id="pets-table-body">
-            <!-- Здесь динамически будут добавляться записи питомцев -->
+            <!-- Данные загружаются из Firestore -->
           </tbody>
         </table>
       </div>

@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Отслеживание состояния аутентификации
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-      // Если пользователь авторизован, показываем админ-панель
       if (document.getElementById('login-container')) {
         document.getElementById('login-container').style.display = 'none';
       }
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('admin-container').style.display = 'block';
       }
     } else {
-      // Если пользователь не авторизован, показываем форму логина
       if (document.getElementById('login-container')) {
         document.getElementById('login-container').style.display = 'block';
       }
@@ -23,12 +21,12 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Обработка формы логина
-  var loginForm = document.getElementById('login-form');
+  const loginForm = document.getElementById('login-form');
   if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      var email = document.getElementById('login-email').value;
-      var password = document.getElementById('login-password').value;
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then(() => {
           document.getElementById('login-error').textContent = '';
@@ -40,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Обработка кнопки выхода
-  var logoutBtn = document.getElementById('logoutBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function() {
       firebase.auth().signOut().then(() => {
@@ -51,32 +49,51 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Если мы на странице списка питомцев (index.html)
+  // Если на странице списка питомцев (index.html)
   if (document.getElementById('pets-table-body')) {
     loadPetProfiles();
   }
 
-  // Если мы на странице карточки питомца (pet.html)
+  // Если на странице карточки питомца (edit.html)
   if (document.getElementById('pet-details')) {
     loadPetDetails();
-  }
-
-  // Обработка показа/скрытия формы редактирования на pet.html
-  var editPetBtn = document.getElementById('editPetBtn');
-  if (editPetBtn) {
-    editPetBtn.addEventListener('click', function() {
-      var formContainer = document.getElementById('editPetFormContainer');
-      formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-    });
-  }
-  var cancelEditBtn = document.getElementById('cancelEditBtn');
-  if (cancelEditBtn) {
-    cancelEditBtn.addEventListener('click', function() {
-      document.getElementById('editPetFormContainer').style.display = 'none';
-    });
+    
+    // Показ формы редактирования
+    const showEditFormBtn = document.getElementById('showEditFormBtn');
+    if (showEditFormBtn) {
+      showEditFormBtn.addEventListener('click', function() {
+        const formContainer = document.getElementById('editPetFormContainer');
+        formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
+      });
+    }
+    // Отмена редактирования
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener('click', function() {
+        document.getElementById('editPetFormContainer').style.display = 'none';
+      });
+    }
+    // Дополнительные действия врача (пока-заглушки)
+    const addDiseaseBtn = document.getElementById('addDiseaseBtn');
+    if (addDiseaseBtn) {
+      addDiseaseBtn.addEventListener('click', function() {
+        alert('Функция "Добавить болезнь" пока не реализована.');
+      });
+    }
+    const addDietBtn = document.getElementById('addDietBtn');
+    if (addDietBtn) {
+      addDietBtn.addEventListener('click', function() {
+        alert('Функция "Добавить диету" пока не реализована.');
+      });
+    }
+    const addRecordBtn = document.getElementById('addRecordBtn');
+    if (addRecordBtn) {
+      addRecordBtn.addEventListener('click', function() {
+        alert('Функция "Добавить запись" пока не реализована.');
+      });
+    }
   }
 });
-
 
 // Загрузка списка питомцев с фильтром
 function loadPetProfiles() {
@@ -91,7 +108,7 @@ function loadPetProfiles() {
         allPets.push(pet);
       });
       renderPetTable(allPets);
-      // Фильтр
+      // Фильтр поиска
       const searchInput = document.getElementById('searchInput');
       searchInput.addEventListener('input', function() {
         const query = searchInput.value.toLowerCase();
@@ -119,15 +136,15 @@ function renderPetTable(pets) {
       <td>${pet.age || ''}</td>
       <td>${pet.owner || ''}</td>
     `;
-    // При клике переходим на карточку питомца
+    // При клике переходим на edit.html с параметром id питомца
     tr.addEventListener('click', function() {
-      window.location.href = `pet.html?id=${pet.id}`;
+      window.location.href = `edit.html?id=${pet.id}`;
     });
     tableBody.appendChild(tr);
   });
 }
 
-// Загрузка данных питомца для страницы pet.html
+// Загрузка данных питомца для страницы edit.html
 function loadPetDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const petId = urlParams.get('id');
@@ -138,6 +155,7 @@ function loadPetDetails() {
         const pet = doc.data();
         pet.id = doc.id;
         displayPetDetails(pet);
+        prefillEditForm(pet);
       } else {
         document.getElementById('pet-details').textContent = 'Питомец не найден';
       }
@@ -159,20 +177,23 @@ function displayPetDetails(pet) {
             <p class="card-text">Порода: ${pet.breed || 'Не указано'}</p>
             <p class="card-text">Возраст: ${pet.age || ''}</p>
             <p class="card-text">Владелец: ${pet.owner || 'Не указан'}</p>
+            <p class="card-text">Режим питания: ${pet.feedingRegime || 'Не указан'}</p>
+            <p class="card-text">Медицинская карта: ${pet.medicalRecord || 'Нет данных'}</p>
           </div>
         </div>
       </div>
     </div>
   `;
-  
-  // Предзаполнение формы редактирования
+}
+
+function prefillEditForm(pet) {
   document.getElementById('edit-pet-name').value = pet.name || '';
   document.getElementById('edit-pet-breed').value = pet.breed || '';
   document.getElementById('edit-pet-age').value = pet.age || '';
   document.getElementById('edit-pet-owner').value = pet.owner || '';
   document.getElementById('edit-pet-photo').value = pet.photoUrl || '';
-  
-  // Обработка формы редактирования
+  document.getElementById('edit-pet-feeding').value = pet.feedingRegime || '';
+  document.getElementById('edit-pet-medical').value = pet.medicalRecord || '';
   const editForm = document.getElementById('edit-pet-form');
   editForm.onsubmit = function(e) {
     e.preventDefault();
@@ -186,12 +207,13 @@ function updatePetDetails(petId) {
     breed: document.getElementById('edit-pet-breed').value,
     age: parseInt(document.getElementById('edit-pet-age').value),
     owner: document.getElementById('edit-pet-owner').value,
-    photoUrl: document.getElementById('edit-pet-photo').value
+    photoUrl: document.getElementById('edit-pet-photo').value,
+    feedingRegime: document.getElementById('edit-pet-feeding').value,
+    medicalRecord: document.getElementById('edit-pet-medical').value
   };
   firebase.firestore().collection('pets').doc(petId).update(updatedData)
     .then(() => {
       document.getElementById('edit-pet-message').textContent = 'Данные обновлены';
-      // Обновляем отображение карточки
       displayPetDetails(updatedData);
       document.getElementById('editPetFormContainer').style.display = 'none';
     })

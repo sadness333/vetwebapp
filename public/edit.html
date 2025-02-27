@@ -3,58 +3,93 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Добавить / Редактировать питомца</title>
-
+    <title>Карточка питомца</title>
+    
     <!-- Firebase SDK -->
     <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
     <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
     <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Внешний файл стилей -->
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <!-- Навигационная панель -->
+    <!-- Верхняя навигационная панель -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="index.html">Vet Admin</a>
       <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
     </nav>
-
-    <div class="container" style="margin-top: 80px;">
-      <h2 id="form-title">Добавить питомца</h2>
-      <form id="animal-form">
-        <div class="form-group">
-          <label for="animal-name">Имя питомца</label>
-          <input type="text" id="animal-name" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label for="animal-breed">Порода</label>
-          <input type="text" id="animal-breed" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label for="animal-age">Возраст</label>
-          <input type="number" id="animal-age" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label for="animal-status">Статус</label>
-          <select id="animal-status" class="form-control">
-            <option value="Здоров">Здоров</option>
-            <option value="Требует внимания">Требует внимания</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="animal-photo">URL фото</label>
-          <input type="text" id="animal-photo" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-success">Сохранить</button>
-        <button type="button" class="btn btn-secondary" id="cancelBtn">Отмена</button>
-      </form>
-      <div id="form-message" class="mt-3"></div>
+    
+    <!-- Сайдбар (такой же, как на главной странице) -->
+    <div class="sidebar">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Карточка питомца</a>
+        </li>
+      </ul>
     </div>
-
+    
+    <!-- Основной контент: карточка питомца и форма редактирования -->
+    <div class="content">
+      <h2>Карточка питомца</h2>
+      <div id="pet-details">
+        <!-- Здесь будут выведены данные питомца -->
+      </div>
+      <button class="btn btn-primary mt-3" id="showEditFormBtn">Редактировать данные</button>
+      
+      <!-- Форма редактирования (скрыта по умолчанию) -->
+      <div id="editPetFormContainer" style="display: none;" class="mt-4">
+        <h4>Редактировать данные питомца</h4>
+        <form id="edit-pet-form">
+          <div class="form-group">
+            <label for="edit-pet-name">Имя</label>
+            <input type="text" id="edit-pet-name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-pet-breed">Порода</label>
+            <input type="text" id="edit-pet-breed" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-pet-age">Возраст</label>
+            <input type="number" id="edit-pet-age" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-pet-owner">Владелец</label>
+            <input type="text" id="edit-pet-owner" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-pet-photo">URL фото</label>
+            <input type="text" id="edit-pet-photo" class="form-control">
+          </div>
+          <!-- Дополнительные поля -->
+          <div class="form-group">
+            <label for="edit-pet-feeding">Режим питания</label>
+            <input type="text" id="edit-pet-feeding" class="form-control" placeholder="Например, 2 раза в день">
+          </div>
+          <div class="form-group">
+            <label for="edit-pet-medical">Медицинская карта</label>
+            <textarea id="edit-pet-medical" class="form-control" rows="3" placeholder="История заболеваний, рекомендации"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Сохранить изменения</button>
+          <button type="button" class="btn btn-secondary" id="cancelEditBtn">Отмена</button>
+          <div id="edit-pet-message" class="mt-2"></div>
+        </form>
+      </div>
+      
+      <!-- Дополнительные действия врача -->
+      <div class="mt-4">
+        <h4>Дополнительные действия</h4>
+        <button class="btn btn-outline-primary" id="addDiseaseBtn">Добавить болезнь</button>
+        <button class="btn btn-outline-primary" id="addDietBtn">Добавить диету</button>
+        <button class="btn btn-outline-primary" id="addRecordBtn">Добавить запись</button>
+      </div>
+    </div>
+    
     <!-- jQuery и Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
