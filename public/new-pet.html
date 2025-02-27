@@ -76,46 +76,50 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Функция для загрузки владельцев и заполнения datalist
-    function loadOwners() {
-      firebase.firestore().collection('owners').get()
-      .then(querySnapshot => {
-        const ownerList = document.getElementById('ownerList');
-        ownerList.innerHTML = '';
-        querySnapshot.forEach(doc => {
-          const owner = doc.data();
-          const option = document.createElement('option');
-          // Выводим имя владельца и email для отличия
-          option.value = owner.name + ' (' + owner.email + ')';
-          ownerList.appendChild(option);
-        });
-      })
-      .catch(error => console.error("Ошибка загрузки владельцев:", error));
-    }
-    
-    // Обработка формы добавления питомца
-    document.getElementById('new-pet-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const petData = {
-         name: document.getElementById('pet-name').value,
-         breed: document.getElementById('pet-breed').value,
-         age: parseInt(document.getElementById('pet-age').value) || 0,
-         owner: document.getElementById('pet-owner').value,
-         photoUrl: document.getElementById('pet-photo').value,
-         feedingRegime: document.getElementById('pet-feeding').value,
-         medicalRecord: document.getElementById('pet-medical').value
-      };
-      firebase.firestore().collection('pets').add(petData)
-         .then(() => {
-            document.getElementById('new-pet-message').textContent = 'Питомец добавлен успешно';
-            document.getElementById('new-pet-form').reset();
-         })
-         .catch((error) => {
-            document.getElementById('new-pet-message').textContent = 'Ошибка: ' + error.message;
-         });
+    // Оборачиваем весь код, зависящий от firebase, в DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Функция для загрузки владельцев и заполнения datalist
+      function loadOwners() {
+        firebase.firestore().collection('owners').get()
+        .then(querySnapshot => {
+          const ownerList = document.getElementById('ownerList');
+          ownerList.innerHTML = '';
+          querySnapshot.forEach(doc => {
+            const owner = doc.data();
+            const option = document.createElement('option');
+            // Выводим имя владельца и email для отличия
+            option.value = owner.name + ' (' + owner.email + ')';
+            ownerList.appendChild(option);
+          });
+        })
+        .catch(error => console.error("Ошибка загрузки владельцев:", error));
+      }
+      
+      // Обработка формы добавления питомца
+      document.getElementById('new-pet-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const petData = {
+           name: document.getElementById('pet-name').value,
+           breed: document.getElementById('pet-breed').value,
+           age: parseInt(document.getElementById('pet-age').value) || 0,
+           owner: document.getElementById('pet-owner').value,
+           photoUrl: document.getElementById('pet-photo').value,
+           feedingRegime: document.getElementById('pet-feeding').value,
+           medicalRecord: document.getElementById('pet-medical').value
+        };
+        firebase.firestore().collection('pets').add(petData)
+           .then(() => {
+              document.getElementById('new-pet-message').textContent = 'Питомец добавлен успешно';
+              document.getElementById('new-pet-form').reset();
+           })
+           .catch((error) => {
+              document.getElementById('new-pet-message').textContent = 'Ошибка: ' + error.message;
+           });
+      });
+      
+      // Загружаем владельцев для datalist
+      loadOwners();
     });
-    
-    loadOwners();
   </script>
 </body>
 </html>
