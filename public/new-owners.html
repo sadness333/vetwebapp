@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Добавление владельца</title>
+  
+  <!-- Firebase SDK -->
+  <script defer src="/__/firebase/11.3.1/firebase-app-compat.js"></script>
+  <script defer src="/__/firebase/11.3.1/firebase-auth-compat.js"></script>
+  <script defer src="/__/firebase/11.3.1/firebase-firestore-compat.js"></script>
+  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="index.html">Vet Admin</a>
+      <button class="btn btn-outline-light ml-auto" id="logoutBtn">Выйти</button>
+  </nav>
+  <div class="sidebar">
+    <ul class="nav flex-column">
+       <li class="nav-item"><a class="nav-link" href="index.html">Главная</a></li>
+       <li class="nav-item"><a class="nav-link" href="new-pet.html">Добавление питомца</a></li>
+       <li class="nav-item"><a class="nav-link active" href="new-owner.html">Добавление владельца</a></li>
+    </ul>
+  </div>
+  <div class="content">
+    <h2>Добавление нового владельца</h2>
+    <form id="new-owner-form">
+      <div class="form-group">
+         <label for="owner-name">Имя владельца</label>
+         <input type="text" id="owner-name" class="form-control" required>
+      </div>
+      <div class="form-group">
+         <label for="owner-email">Email</label>
+         <input type="email" id="owner-email" class="form-control">
+      </div>
+      <div class="form-group">
+         <label for="owner-phone">Телефон</label>
+         <input type="text" id="owner-phone" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-success">Добавить владельца</button>
+      <div id="new-owner-message" class="mt-2"></div>
+    </form>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('new-owner-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const ownerData = {
+         name: document.getElementById('owner-name').value,
+         email: document.getElementById('owner-email').value,
+         phone: document.getElementById('owner-phone').value
+      };
+      firebase.firestore().collection('owners').add(ownerData)
+         .then(() => {
+            document.getElementById('new-owner-message').textContent = 'Владелец добавлен успешно';
+            document.getElementById('new-owner-form').reset();
+         })
+         .catch((error) => {
+            document.getElementById('new-owner-message').textContent = 'Ошибка: ' + error.message;
+         });
+    });
+  </script>
+</body>
+</html>
