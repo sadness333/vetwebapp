@@ -95,7 +95,7 @@ function renderPetTable(pets) {
   pets.forEach(pet => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><img src="${pet.photoUrl || 'https://via.placeholder.com/50'}" alt="Фото" class="img-thumbnail" width="50"></td>
+      <td><img src="${pet.photoUrl || 'https://cdn-icons-png.flaticon.com/512/5871/5871573.png'}" alt="Фото" class="img-thumbnail" width="50"></td>
       <td>${pet.name || ''}</td>
       <td>${pet.breed || ''}</td>
       <td>${pet.age || ''}</td>
